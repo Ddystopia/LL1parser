@@ -10,7 +10,7 @@ const TokenType FACT = TokenType("FACT");
 // Terminals
 const TokenType PLUS = TokenType("PLUS");
 const TokenType MINUS = TokenType("MINUS");
-const TokenType MUL = TokenType("MUL");
+const TokenType STAR = TokenType("STAR");
 const TokenType DIV = TokenType("DIV");
 const TokenType LP = TokenType("LP");
 const TokenType RP = TokenType("RP");
@@ -25,7 +25,7 @@ std::vector<Product> TokenDefinitions::Grammar {
   }),
   Product(TERM, {
     { POW },
-    { POW, MUL, TERM },
+    { POW, STAR, TERM },
     { POW, DIV, TERM },
   }),
   Product(POW, {
@@ -41,7 +41,7 @@ std::vector<Product> TokenDefinitions::Grammar {
 std::vector<StaticTokenDefinition> TokenDefinitions::statics {
   StaticTokenDefinition("+", PLUS),
   StaticTokenDefinition("-", MINUS),
-  StaticTokenDefinition("*", MUL),
+  StaticTokenDefinition("*", STAR),
   StaticTokenDefinition("/", DIV),
   StaticTokenDefinition("(", LP),
   StaticTokenDefinition(")", RP),

@@ -13,10 +13,16 @@ class Parser{
     int m_tokenId;
     std::vector<Token*> *m_tokens;
     
+    ld calc ();
     Token* peek();
     Token* get();
     void setId(int id);
     void clear();
+
+    ld expr();
+    ld term();
+    ld pow();
+    ld fact();
   public:
     Parser();
     ld parse(std::string source);

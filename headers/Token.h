@@ -5,6 +5,7 @@
 #include <vector>
 #include <regex>
 #include <initializer_list>
+typedef long double ld;
 
 class TokenType {
   private:
@@ -51,13 +52,15 @@ class DynamicTokenDefinition : public TokenDefinition<std::regex> {
 };
 
 class Product {
+  typedef std::vector< std::vector<TokenType> > eqv;
   private:
     TokenType m_type;
-    std::vector< std::vector<TokenType> > m_equalentSeries;
+    eqv m_equalentSeries;
   public:
     Product(TokenType type, 
       std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
-    TokenType getType() const { return m_type; };
+    const TokenType &getType() const { return m_type; };
+    const eqv &getEqualents() const { return m_equalentSeries; };
 };
 
 namespace TokenDefinitions {
