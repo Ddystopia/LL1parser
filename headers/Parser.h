@@ -5,6 +5,7 @@
 #include <string>
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
+#include "../headers/Node.h"
 
 typedef long double ld;
 
@@ -13,19 +14,17 @@ class Parser{
     int m_tokenId;
     std::vector<Token*> *m_tokens;
     
-    ld calc ();
-    Token* peek();
-    Token* get();
+    Node* calc (TokenType token);
+    const Token* peek();
+    const Token* get();
     void setId(int id);
     void clear();
+    const Product *getProd(TokenType token);
 
-    ld expr();
-    ld term();
-    ld pow();
-    ld fact();
-  public:
+ public:
     Parser();
-    ld parse(std::string source);
+    ~Parser();
+    Node *parse(const std::string &source);
 };
 
 #endif

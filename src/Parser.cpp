@@ -1,47 +1,64 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "../headers/Parser.h"
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
 
 typedef long double ld;
+using TokenDefinitions::Grammar;
 
 Parser::Parser()
   : m_tokenId(0), m_tokens(nullptr)
 {}
 
-ld Parser::parse(std::string source){
+Parser::~Parser() { clear(); }
+
+Node* Parser::parse(const std::string &source){
+  clear();
   Lexer lexer{Lexer()};
   m_tokens = lexer.tokenize(source);
 
-  ld result(calc());
-  clear();
-  return result;
+  return calc(Grammar[0].getType());
 }
 
-ld Parser::calc(){
-  return expr();
-}
+Node* Parser::calc(TokenType token) {
+  const Product *prod(getProd(token));
+  std::vector<std::vector<TokenType>> eqs(prod->getEqualents());
+  int startTokenId(m_tokenId);
 
-ld Parser::expr(){
-  ld result(0.0);
-  int index(0);
-  bool hasMatch(false);
-  for (auto const &serie: TokenDefinitions::Grammar[0].getEqualents()) {
-    if (peek()->getType() == serie[index]){
-      get();
-      index++;
-      hasMatch = true;
+  for (auto const &eq: eqs) {
+    std::vector<Node *> stack{};
+
+    for (auto const &token: eq) {
+      if (peek()->getType() != token) { 
+        if(token.isProduct()) stack.push_back(calc(token));
+        else break;
+      } else {
+        stack.push_back(new Node(get()));
+      }
     }
+
+    if (stack.size() == eq.size()) 
+      return new Node(token, stack);
+
+    for (auto const &node: stack) delete node;
+    setId(startTokenId); 
   }
-  return result;
+
+  throw "some";
 }
 
-Token* Parser::peek(){
+const Product *Parser::getProd(TokenType token) {
+  return &*std::find_if(Grammar.begin(), Grammar.end(),
+      [token](Product prod) -> bool { return prod.getType() == token; });
+}
+
+const Token* Parser::peek(){
   return (*m_tokens)[m_tokenId + 1];
 }
 
-Token* Parser::get(){
+const Token* Parser::get(){
   return (*m_tokens)[++m_tokenId];
 }
 

@@ -1,4 +1,5 @@
 #include "../headers/Token.h"
+#include "../headers/Node.h"
 #include <vector>
 #include <string>
 
@@ -16,6 +17,17 @@ const TokenType LP = TokenType("LP");
 const TokenType RP = TokenType("RP");
 const TokenType POWER = TokenType("POWER");
 const TokenType NUM = TokenType("NUM");
+
+class Expr: public Node {
+  public:
+    Expr(std::vector<const Token *>&args) : Node(args) {};
+    virtual long double evaluate() const {
+      if (m_arguments.size() == 1) m_arguments[0].evaluate();
+    }
+    virtual Node * getNewNode(std::vector<const Token *>& args) const {
+      return new Expr(args);
+    }
+};
 
 std::vector<Product> TokenDefinitions::Grammar {
   Product(EXPR, {

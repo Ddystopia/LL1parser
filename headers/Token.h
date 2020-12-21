@@ -12,6 +12,7 @@ class TokenType {
     std::string m_type;
   public:
     TokenType(std::string type);
+    bool isProduct() const;
     const std::string &getType() const { return m_type; };
     friend bool operator==(const TokenType &left, const TokenType &right);
     friend bool operator!=(const TokenType &left, const TokenType &right);
@@ -53,14 +54,20 @@ class DynamicTokenDefinition : public TokenDefinition<std::regex> {
 
 class Product {
   typedef std::vector< std::vector<TokenType> > eqv;
+  typedef std::vector<std::function<std::vector<const Token *>>> evalsVec;
+
   private:
     TokenType m_type;
     eqv m_equalentSeries;
+    evalsVec m_evals;
+
   public:
     Product(TokenType type, 
       std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
+    const Token *eval(std::vector<const Token *> &tokens) const;
     const TokenType &getType() const { return m_type; };
     const eqv &getEqualents() const { return m_equalentSeries; };
+    eqv getCopyEqualents() const { return m_equalentSeries; }
 };
 
 namespace TokenDefinitions {

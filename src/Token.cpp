@@ -1,6 +1,7 @@
 #include "../headers/Token.h"
 #include <string>
 #include <regex>
+#include <algorithm>
 
 
 Token::Token(TokenType type, std::string value)
@@ -26,6 +27,14 @@ TokenType::TokenType(std::string type)
   : m_type(type)
 {}
 
+bool TokenType::isProduct() const {
+  using TokenDefinitions::Grammar;
+  auto prod = std::find_if(Grammar.begin(), Grammar.end(), 
+      [this](Product &prod) -> bool { return prod.getType() == *this; });
+
+  return prod != Grammar.end();
+}
+
 bool operator==(const TokenType &left, const TokenType &right) {
   return left.getType() == right.getType();
 }
@@ -35,10 +44,15 @@ bool operator!=(const TokenType &left, const TokenType &right){
 }
 
 Product::Product(TokenType type, 
-  std::initializer_list<std::initializer_list<TokenType>> eqS)
-  : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>())
+  std::initializer_list<std::initializer_list<TokenType>> eqS, 
+  std::initializer_list<std::function<std::vector<const Token *>>> evals)
+  : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>()), m_evals(evals)
 {
-  for (auto eqs = eqS.begin(); eqs != eqS.end(); eqs++) {
+  std::sort(eqS.begin(), eqS.end(), 
+      [](std::vector<TokenType> &a, std::vector<TokenType> &b) -> bool 
+      { return a.size() > b.size(); });
+
+  for (auto eqs(eqS.begin()); eqs != eqS.end(); eqs++) {
     m_equalentSeries.push_back(std::vector<TokenType>(*eqs));
   }
 }
