@@ -2,10 +2,11 @@
 #define NODE
 
 #include <vector>
+#include <string>
 #include "../headers/Token.h"
 
 class Node {
-  protected: 
+  private: 
     std::string m_value{""};
     TokenType m_type;
     std::vector<Node *> m_subnodes{};

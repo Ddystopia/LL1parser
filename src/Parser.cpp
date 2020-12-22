@@ -5,7 +5,6 @@
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
 
-typedef long double ld;
 using TokenDefinitions::Grammar;
 
 Parser::Parser()
@@ -68,6 +67,8 @@ void Parser::setId(int id){
 
 void Parser::clear(){
   setId(0);
+
+  if (!m_tokens) return;
   for (auto it = m_tokens->begin(); it != m_tokens->end(); it++) 
     delete *it;
   delete m_tokens;

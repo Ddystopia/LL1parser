@@ -1,0 +1,18 @@
+{
+  "configurations": {
+    "launch": {
+      "adapter": "vscode-cpptools",
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/build/run",
+        "args": [],
+        "cwd": "${workspaceRoot}",
+        "environment": ["*${args:--update-gadget-config}"],
+        "externalConsole": true,
+        "stopAnEntry": true,
+        "MIMode": "gdb",
+        "MIDebuggerPath": "/usr/bin/gdb"
+      }
+    }
+  }
+}

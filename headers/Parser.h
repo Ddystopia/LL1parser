@@ -7,12 +7,10 @@
 #include "../headers/Token.h"
 #include "../headers/Node.h"
 
-typedef long double ld;
-
 class Parser{
   private:
     int m_tokenId;
-    std::vector<Token*> *m_tokens;
+    std::vector<Token*> *m_tokens{nullptr};
     
     Node* calc (TokenType token);
     const Token* peek();

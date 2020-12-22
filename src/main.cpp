@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "../headers/MathParser.h"
+#include "../headers/Parser.h"
 
 std::string join(char *cstr[], int len) {
   std::string result;
@@ -13,17 +13,15 @@ std::string join(char *cstr[], int len) {
 }
 
 int main(int argc, char *argv[]) {
-  MathParser parser; 
+  Parser parser; 
   std::string expression{ join(argv + 1, argc - 1) };
 
-  long double result(0);
+  Node* result(0);
   try {
     result = parser.parse(expression);
   } catch (...) {
     std::cout << "Some error ocurred";
   }
-
-  std::cout << result;
 
   return 0;
 }
