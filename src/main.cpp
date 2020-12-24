@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
   Parser parser; 
   std::string expression{ join(argv + 1, argc - 1) };
 
-  Node* result(0);
+  Node* result;
   try {
     result = parser.parse(expression);
   } catch (...) {

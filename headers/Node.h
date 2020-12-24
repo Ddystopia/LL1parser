@@ -14,7 +14,8 @@ class Node {
     Node(const Token* token);
     Node(TokenType type, const std::vector<Node *> &subnodes);
     TokenType getType() const { return m_type; };
-    std::string getValue() const { return m_value; };
+    const std::string &getValue() const { return m_value; };
+    const std::vector<Node *> &getSubnodes() const { return m_subnodes; }
 };
 
 #endif

@@ -8,22 +8,27 @@
 using TokenDefinitions::Grammar;
 
 Parser::Parser()
-  : m_tokenId(0), m_tokens(nullptr)
+  : m_tokenId(-1), m_tokens(nullptr)
 {}
 
 Parser::~Parser() { clear(); }
 
 Node* Parser::parse(const std::string &source){
-  clear();
   Lexer lexer{Lexer()};
   m_tokens = lexer.tokenize(source);
 
-  return calc(Grammar[0].getType());
+  Node *result (calc(Grammar[0].getType()));
+  
+  // +1 - index by tokens + EOI, -1 - get last index
+  if (m_tokenId + 1 != m_tokens->size() - 1) throw "some"; 
+
+  clear();
+  return result;
 }
 
 Node* Parser::calc(TokenType token) {
   const Product *prod(getProd(token));
-  std::vector<std::vector<TokenType>> eqs(prod->getEqualents());
+  const std::vector<std::vector<TokenType>> &eqs(prod->getEqualents());
   int startTokenId(m_tokenId);
 
   for (auto const &eq: eqs) {
@@ -54,11 +59,11 @@ const Product *Parser::getProd(TokenType token) {
 }
 
 const Token* Parser::peek(){
-  return (*m_tokens)[m_tokenId + 1];
+  return m_tokens->at(m_tokenId + 1);
 }
 
 const Token* Parser::get(){
-  return (*m_tokens)[++m_tokenId];
+  return m_tokens->at(++m_tokenId);
 }
 
 void Parser::setId(int id){
@@ -66,7 +71,7 @@ void Parser::setId(int id){
 }
 
 void Parser::clear(){
-  setId(0);
+  setId(-1);
 
   if (!m_tokens) return;
   for (auto it = m_tokens->begin(); it != m_tokens->end(); it++) 

@@ -5,9 +5,9 @@
       "configuration": {
         "request": "launch",
         "program": "${workspaceRoot}/build/run",
-        "args": [],
+        "args": ["1+1"],
         "cwd": "${workspaceRoot}",
-        "environment": ["*${args:--update-gadget-config}"],
+        "environment": [],
         "externalConsole": true,
         "stopAnEntry": true,
         "MIMode": "gdb",

@@ -47,12 +47,13 @@ Product::Product(TokenType type,
   std::initializer_list<std::initializer_list<TokenType>> eqS)
   : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>())
 {
-  std::sort(m_equalentSeries.begin(), m_equalentSeries.end(), 
-      [](std::vector<TokenType> &a, std::vector<TokenType> &b) -> bool 
-      { return a.size() > b.size(); });
-
   for (auto eqs(eqS.begin()); eqs != eqS.end(); eqs++) {
     m_equalentSeries.push_back(std::vector<TokenType>(*eqs));
   }
+
+  std::sort(m_equalentSeries.begin(), m_equalentSeries.end(), 
+      [](const std::vector<TokenType> &a, const std::vector<TokenType> &b) -> bool {
+    return a.size() > b.size(); 
+  });
 }
 

@@ -61,7 +61,6 @@ class Product {
   public:
     Product(TokenType type, 
       std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
-    const Token *eval(std::vector<const Token *> &tokens) const;
     const TokenType &getType() const { return m_type; };
     const eqv &getEqualents() const { return m_equalentSeries; };
 };

@@ -5,20 +5,19 @@
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
 
-#include <iostream>
-
 using TokenDefinitions::statics;
 using TokenDefinitions::dynamics;
 
-Lexer::Lexer()
-  : m_offset(0), m_source("") 
-{}
+const std::string EOI{"EOI"};
 
-std::vector<Token*> *Lexer::tokenize(std::string source){
+Lexer::Lexer() {}
+
+std::vector<Token*> *Lexer::tokenize(const std::string &source){
   auto lexems{new std::vector<Token*>};
-  lexems->reserve(source.length()); // wont be bigger then source
+  lexems->reserve(source.length() + 1); // wont be bigger then source + EOI
   m_source = source;
 
+  skipSpaces();
   while(inBounds()){
     Token *token;
     Token *staticTry(staticToken());
@@ -27,29 +26,32 @@ std::vector<Token*> *Lexer::tokenize(std::string source){
     if(!token) throw "Unexpected char at {m_offset + 1}";
 
     lexems->push_back(token);
+    skipSpaces();
   }
+
+  lexems->push_back(new Token(TokenType(EOI), EOI)); // Exlution
 
   cleanUp();
   return lexems;
 }
 
 Token* Lexer::staticToken(){
-  for(auto tokenDef = statics.begin(); tokenDef != statics.end(); ++tokenDef){
-    std::string rep(tokenDef->getRepres());
+  for(auto const &tokenDef: statics) {
+    std::string rep(tokenDef.getRepres());
 
     if(m_source.substr(m_offset, rep.length()) != rep)
       continue;
 
     m_offset += rep.length();
 
-    return new Token(tokenDef->getType(), rep);
+    return new Token(tokenDef.getType(), rep);
   }
   return nullptr;
 }
 
 Token* Lexer::dynamicToken(){
-  for(auto tokenDef = dynamics.begin(); tokenDef != dynamics.end(); ++tokenDef){
-    std::regex rep(tokenDef->getRepres());
+  for(auto const &tokenDef: dynamics) {
+    std::regex rep(tokenDef.getRepres());
 
     std::smatch m;
     std::string substr(m_source.substr(m_offset));
@@ -60,13 +62,14 @@ Token* Lexer::dynamicToken(){
     std::string value(m[0].str());
     m_offset += value.length();
 
-    return new Token(tokenDef->getType(), value);
+    return new Token(tokenDef.getType(), value);
   }
   return nullptr;
 }
 
 void Lexer::skipSpaces(){
-  while(inBounds() && std::find(m_spaces, m_spaces + 4, m_source[m_offset])) 
+  while(inBounds() && 
+      std::find(m_spaces.begin(), m_spaces.end(), m_source[m_offset]) != m_spaces.end()) 
     m_offset++;
 }
 
@@ -76,5 +79,4 @@ bool Lexer::inBounds(){
 
 void Lexer::cleanUp(){
   m_offset = 0;
-  m_source.clear();
 }
