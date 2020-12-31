@@ -3,7 +3,6 @@
 #include <regex>
 #include <algorithm>
 
-
 Token::Token(TokenType type, std::string value)
   : m_type(type), m_value(value)
 {}
@@ -43,6 +42,10 @@ bool operator!=(const TokenType &left, const TokenType &right){
   return left.getType() != right.getType();
 }
 
+bool operator<(const TokenType &left, const TokenType &right){
+  return left.getType() < right.getType();
+}
+
 Product::Product(TokenType type, 
   std::initializer_list<std::initializer_list<TokenType>> eqS)
   : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>())
@@ -56,4 +59,11 @@ Product::Product(TokenType type,
     return a.size() > b.size(); 
   });
 }
+
+const Product *Product::getProd(TokenType token) {
+  using TokenDefinitions::Grammar;
+  return &*std::find_if(Grammar.begin(), Grammar.end(),
+      [token](Product prod) -> bool { return prod.getType() == token; });
+}
+
 

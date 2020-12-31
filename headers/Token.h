@@ -15,10 +15,12 @@ class TokenType {
     const std::string &getType() const { return m_type; };
     friend bool operator==(const TokenType &left, const TokenType &right);
     friend bool operator!=(const TokenType &left, const TokenType &right);
+    friend bool operator<(const TokenType &left, const TokenType &right);
 };
 
 bool operator==(const TokenType &left, const TokenType &right);
 bool operator!=(const TokenType &left, const TokenType &right);
+bool operator<(const TokenType &left, const TokenType &right);
 
 class Token {
   private:
@@ -63,6 +65,7 @@ class Product {
       std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
     const TokenType &getType() const { return m_type; };
     const eqv &getEqualents() const { return m_equalentSeries; };
+    static const Product *getProd(TokenType token);
 };
 
 namespace TokenDefinitions {

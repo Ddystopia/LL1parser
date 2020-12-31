@@ -9,7 +9,10 @@
 
 #include <iostream>
 
-Parser::Parser() {}
+Parser::Parser()
+  : m_tokenId(-1), m_tokens(nullptr)
+{}
+
 Parser::~Parser() { clear(); }
 
 std::shared_ptr<Node> Parser::parse(const std::string &source){
@@ -18,19 +21,18 @@ std::shared_ptr<Node> Parser::parse(const std::string &source){
   Lexer lexer{Lexer()};
   m_tokens = lexer.tokenize(source);
 
-  std::shared_ptr<Node> result(calc(Grammar[0].getType(), m_tokens->size() - 2));
+  std::shared_ptr<Node> result(calc(Grammar[0].getType()));
   
   // +1 - index by tokens + EOI, -1 - get last index
-//   if (m_tokenId != m_tokens->size() - 2) setError("someSize");
-  if (m_error.size() != 0) throw m_error;
+  if (m_tokenId + 1 != m_tokens->size() - 1) throw "some"; 
 
   clear();
   return result;
 }
 
-std::shared_ptr<Node> Parser::calc(TokenType token, int expectedEndId) {
+std::shared_ptr<Node> Parser::calc(TokenType token) {
   // memorization
-  std::pair<int, TokenType> lockation{ m_tokenId, token }; 
+  auto lockation(std::make_pair(m_tokenId, token)); 
   if (auto node(m_cache.find(lockation)); node != m_cache.end()) { 
     setId(node->second.second);
     return node->second.first;
@@ -40,24 +42,20 @@ std::shared_ptr<Node> Parser::calc(TokenType token, int expectedEndId) {
   const std::vector<std::vector<TokenType>> &eqs(prod->getEqualents());
   int startTokenId(m_tokenId);
 
-  for (int i(0); i < eqs.size(); ++i) {
+  for (auto const &eq: eqs) {
     std::vector<std::shared_ptr<Node>> stack{};
 
-    for (auto const &token: eqs[i]) {
-      std::shared_ptr<Node> node; 
+    for (auto const &token: eq) {
       if (peek()->getType() != token) { 
-        if(!token.isProduct()) break;
-        std::shared_ptr<Node> tmpNode(calc(token, eqs[i].size() == 1 ? expectedEndId : -1));
-        if (!tmpNode) {
-          if (i == eqs.size() - 1) break;
-          setError("");
-        }
-        node = tmpNode;
+        if(token.isProduct()) {
+          auto node(calc(token));
+        } else break;
+      } else {
+        stack.push_back(std::make_shared<Node>(get()));
       }
-      stack.push_back(node ? node : std::make_shared<Node>(get()));
     }
 
-    if (stack.size() == eqs[i].size() && (expectedEndId == -1 || expectedEndId == m_tokenId)) { 
+    if (stack.size() == eq.size()) { 
       std::shared_ptr<Node> node{std::make_shared<Node>(token, stack)};
       memorize(lockation, std::make_pair(node, m_tokenId));
       return node;
@@ -65,7 +63,6 @@ std::shared_ptr<Node> Parser::calc(TokenType token, int expectedEndId) {
 
     setId(startTokenId); 
   }
-  setError("some");
   return nullptr;
 }
 
@@ -87,7 +84,6 @@ void Parser::memorize(
 void Parser::clear(){
   setId(-1);
   m_cache.clear();
-  setError("");
 
   if (!m_tokens) return;
   for (auto it = m_tokens->begin(); it != m_tokens->end(); it++) 

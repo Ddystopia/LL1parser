@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include "../headers/Parser.h"
 
@@ -16,12 +17,8 @@ int main(int argc, char *argv[]) {
   Parser parser; 
   std::string expression{ join(argv + 1, argc - 1) };
 
-  Node* result;
-  try {
-    result = parser.parse(expression);
-  } catch (...) {
-    std::cout << "Some error ocurred";
-  }
+  std::shared_ptr<Node> result;
+  result = parser.parse(expression);
 
   return 0;
 }
