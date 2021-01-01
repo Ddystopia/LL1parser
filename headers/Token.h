@@ -13,6 +13,7 @@ class TokenType {
     TokenType(std::string type);
     bool isProduct() const;
     const std::string &getType() const { return m_type; };
+
     friend bool operator==(const TokenType &left, const TokenType &right);
     friend bool operator!=(const TokenType &left, const TokenType &right);
     friend bool operator<(const TokenType &left, const TokenType &right);
@@ -26,10 +27,12 @@ class Token {
   private:
     std::string m_value;
     TokenType m_type;
+    int m_offset;
   public:
-    Token(TokenType type, std::string value);
+    Token(TokenType type, std::string value, int m_offset);
     const std::string &getValue() const { return m_value; };
     const TokenType &getType() const { return m_type; };
+    const int &getOffset() const { return m_offset; };
 };
 
 template <class T>

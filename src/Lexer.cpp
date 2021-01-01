@@ -23,13 +23,14 @@ std::vector<Token*> *Lexer::tokenize(const std::string &source){
     Token *staticTry(staticToken());
 
     token = staticTry ? staticTry : dynamicToken();
-    if(!token) throw "Unexpected char at {m_offset + 1}";
+    if(!token) 
+      throw std::string("Unexpected char ") + m_source[m_offset] + " at " + std::to_string(m_offset + 1);
 
     lexems->push_back(token);
     skipSpaces();
   }
 
-  lexems->push_back(new Token(TokenType(EOI), EOI)); // Exlution
+  lexems->push_back(new Token(TokenType(EOI), EOI, m_offset)); // Exlution
 
   cleanUp();
   return lexems;
@@ -44,7 +45,7 @@ Token* Lexer::staticToken(){
 
     m_offset += rep.length();
 
-    return new Token(tokenDef.getType(), rep);
+    return new Token(tokenDef.getType(), rep, m_offset);
   }
   return nullptr;
 }
@@ -62,7 +63,7 @@ Token* Lexer::dynamicToken(){
     std::string value(m[0].str());
     m_offset += value.length();
 
-    return new Token(tokenDef.getType(), value);
+    return new Token(tokenDef.getType(), value, m_offset);
   }
   return nullptr;
 }

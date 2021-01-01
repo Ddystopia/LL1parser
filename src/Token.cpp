@@ -3,8 +3,8 @@
 #include <regex>
 #include <algorithm>
 
-Token::Token(TokenType type, std::string value)
-  : m_type(type), m_value(value)
+Token::Token(TokenType type, std::string value, int offset)
+  : m_type(type), m_value(value), m_offset(offset)
 {}
 
 template <class T>

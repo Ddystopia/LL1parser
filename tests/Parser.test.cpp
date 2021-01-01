@@ -63,3 +63,9 @@ TEST(ParserTests, SimpleExprWithBrackets) {
   std::shared_ptr<Node> inBrackets(getSub(getSub(AST, 1)->getSubnodes()[2], 4)->getSubnodes()[1]);
   ASSERT_EQ(getSub(inBrackets, 5)->getValue(), "3");
 }
+
+TEST(ParserTests, SimpleExprWithBrackets2) {
+  std::string input("(15-2)*3");
+  std::shared_ptr<Node> AST(parser.parse(input));
+
+}

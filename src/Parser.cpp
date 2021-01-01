@@ -38,6 +38,7 @@ std::shared_ptr<Node> Parser::calc(TokenType token, int expectedEndId) {
 
   const Product *prod(Product::getProd(token));
   const std::vector<std::vector<TokenType>> &eqs(prod->getEqualents());
+  std::shared_ptr<Node> result { nullptr };
   int startTokenId(m_tokenId);
 
   for (int i(0); i < eqs.size(); ++i) {
@@ -58,15 +59,18 @@ std::shared_ptr<Node> Parser::calc(TokenType token, int expectedEndId) {
     }
 
     if (stack.size() == eqs[i].size() && (expectedEndId == -1 || expectedEndId == m_tokenId)) { 
-      std::shared_ptr<Node> node{std::make_shared<Node>(token, stack)};
-      memorize(lockation, std::make_pair(node, m_tokenId));
-      return node;
+      result = std::make_shared<Node>(token, stack);
+      break;
     }
 
     setId(startTokenId); 
   }
-  setError("some");
-  return nullptr;
+
+  if (!result && m_error.size() == 0)
+    setError("Unexpected token " + peek()->getValue() + std::string(" at ") + std::to_string( peek()->getOffset() ));
+
+  memorize(lockation, std::make_pair(result, m_tokenId));
+  return result;
 }
 
 const Token* Parser::peek(){
