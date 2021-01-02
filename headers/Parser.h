@@ -19,7 +19,7 @@ class Parser {
       std::pair<std::shared_ptr<Node>, int>
     > m_cache;
     
-    std::shared_ptr<Node> calc (TokenType token, int expectedEndId = -1);
+    std::shared_ptr<Node> calc (TokenType token);
     const std::string &getError() const { return m_error; };
     const Token* peek();
     const Token* get();
