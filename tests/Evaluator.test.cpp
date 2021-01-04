@@ -27,3 +27,10 @@ TEST(EvalTests, BracketsTest) {
   ASSERT_EQ(result, (15-2)*3);
 }
 
+TEST(EvalTests, AllOpersTest) {
+  std::string input("15*3/4*(3+4*2)-8*1");
+  long double result { evaluator.eval(parserEv.parse(input)) };
+
+  ASSERT_EQ(result, 15.0*3/4*(3+4*2)-8*1);
+}
+

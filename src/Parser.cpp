@@ -21,70 +21,82 @@ std::shared_ptr<Node> Parser::parse(const std::string &source){
   std::shared_ptr<Node> result(calc(Grammar[0].getType()));
   
   // +1 - index by tokens + EOI, -1 - get last index
-//   if (m_tokenId != m_tokens->size() - 2) setError("someSize");
-  if (m_error.size() != 0) throw m_error;
+  if (m_tokenId != m_tokens->size() - 1) setError("Unknown Error");
+  if (hasError()) throw m_error;
 
   clear();
   return result;
 }
 
 std::shared_ptr<Node> Parser::calc(TokenType token) {
+  if (hasError()) return nullptr;
+  if (!token.isProduct())
+    return std::make_shared<Node>(get());
+
   // memorization
   std::pair<int, TokenType> lockation{ m_tokenId, token }; 
   if (auto node(m_cache.find(lockation)); node != m_cache.end()) { 
-    setId(node->second.second);
-    return node->second.first;
+    setId(node->second.tokenId);
+    setError(std::string(node->second.error));
+    return node->second.node;
   }
 
-  const Product *prod(Product::getProd(token));
-  const std::vector<std::vector<TokenType>> &eqs(prod->getEqualents());
-  std::shared_ptr<Node> result { nullptr };
-  int startTokenId(m_tokenId);
+  get();
+  auto eqs(Product::getProd(token)->getEqualents());
+  std::vector<std::shared_ptr<Node>> stack {};
+  const std::vector<TokenType>* eq { getEq(eqs) };
 
-  for (int i(0); i < eqs.size(); ++i) {
-    std::vector<std::shared_ptr<Node>> stack{};
+  if (!eq && !hasError())
+    setError("Unexpected token \"" + now()->getValue() + std::string("\" at ") + std::to_string(now()->getOffset()));
 
-    for (auto const &token: eqs[i]) {
-      std::shared_ptr<Node> node; 
-      if (peek()->getType() != token) { 
-        if(!token.isProduct()) break;
-        std::shared_ptr<Node> tmpNode(calc(token));
-        if (!tmpNode) {
-          if (i == eqs.size() - 1) break;
-          setError("");
-        }
-        node = tmpNode;
-      }
-      stack.push_back(node ? node : std::make_shared<Node>(get()));
-    }
+  if(eq) setId(m_tokenId - 1);
+  for (int i(0); eq && !hasError() && i < eq->size(); ++i)
+    stack.push_back(calc(eq->at(i)));
 
-    if (stack.size() == eqs[i].size()) { 
-      result = std::make_shared<Node>(token, stack);
-      break;
-    }
-
-    setId(startTokenId); 
-  }
-
-  if (!result && m_error.size() == 0)
-    setError("Unexpected token " + peek()->getValue() + std::string(" at ") + std::to_string( peek()->getOffset() ));
-
-  memorize(lockation, std::make_pair(result, m_tokenId));
+  std::shared_ptr<Node> result { hasError() ? nullptr : std::make_shared<Node>(token, stack) };
+  memorize(lockation, LockationData{result, m_error, m_tokenId});
   return result;
 }
 
+bool Parser::isCorrect(std::vector<TokenType> eqs) {
+  bool res = eqs[0] == now()->getType() ;
+  bool res1 = eqs.size() == 1 || (peek() && (eqs[1] == peek()->getType() || eqs[1].isProduct()));
+  if (eqs[0].isProduct()) {
+    int memId { m_tokenId };
+    setId(m_tokenId - 1);
+    calc(eqs[0]);
+    if (!hasError()) res = true;
+    res1 = eqs.size() == 1 || (peek() && (eqs[1] == peek()->getType() || eqs[1].isProduct()));
+    setError("");
+    setId(memId);
+  }
+
+  return res && res1;
+}
+
+const std::vector<TokenType> *Parser::getEq(std::vector<std::vector<TokenType>> &eqs) {
+  for (int i(0); i < eqs.size(); ++i)
+    if (isCorrect(eqs[i]))
+      return &eqs[i];
+
+  return nullptr;
+}
+
+const Token* Parser::now(){
+  return m_tokens->at(m_tokenId);
+}
+
 const Token* Parser::peek(){
+  if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return nullptr;
   return m_tokens->at(m_tokenId + 1);
 }
 
 const Token* Parser::get(){
+  if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return nullptr;
   return m_tokens->at(++m_tokenId);
 }
 
-void Parser::memorize(
-    std::pair<int, TokenType> lockation, 
-    std::pair<std::shared_ptr<Node>, int> data) 
-{
+void Parser::memorize(std::pair<int, TokenType> lockation, LockationData data) {
   m_cache.insert(std::make_pair(lockation, data));
 }
 
@@ -99,4 +111,3 @@ void Parser::clear(){
   delete m_tokens;
   m_tokens = nullptr;
 }
-

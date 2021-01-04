@@ -1,4 +1,5 @@
 #include "../headers/Token.h"
+#include <cassert>
 #include <string>
 #include <regex>
 #include <algorithm>
@@ -35,29 +36,29 @@ bool TokenType::isProduct() const {
 }
 
 bool operator==(const TokenType &left, const TokenType &right) {
-  return left.getType() == right.getType();
+  return left.m_type == right.m_type;
 }
 
 bool operator!=(const TokenType &left, const TokenType &right){
-  return left.getType() != right.getType();
+  return left.m_type != right.m_type;
 }
 
 bool operator<(const TokenType &left, const TokenType &right){
-  return left.getType() < right.getType();
+  return left.m_type < right.m_type;
 }
 
 Product::Product(TokenType type, 
-  std::initializer_list<std::initializer_list<TokenType>> eqS)
+  std::initializer_list<std::initializer_list<TokenType>> eqs)
   : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>())
 {
-  for (auto eqs(eqS.begin()); eqs != eqS.end(); eqs++) {
-    m_equalentSeries.push_back(std::vector<TokenType>(*eqs));
+  for (auto const &eq: eqs) {
+    assert(eq.size() > 0);
+    m_equalentSeries.push_back(std::vector<TokenType>(eq));
   }
 
   std::sort(m_equalentSeries.begin(), m_equalentSeries.end(), 
-      [](const std::vector<TokenType> &a, const std::vector<TokenType> &b) -> bool {
-    return a.size() > b.size(); 
-  });
+      [](auto &a, auto &b) -> bool { return a.size() > b.size(); }
+  );
 }
 
 const Product *Product::getProd(TokenType token) {

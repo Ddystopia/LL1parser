@@ -5,10 +5,6 @@
 // Non-terminals
 const TokenType EXPR = TokenType("EXPR");
 const TokenType TERM = TokenType("TERM");
-const TokenType SUM = TokenType("SUM");
-const TokenType DER = TokenType("DER");
-const TokenType MUL = TokenType("MUL");
-const TokenType DIV = TokenType("DIV");
 const TokenType POW = TokenType("POW");
 const TokenType FACT = TokenType("FACT");
 // Terminals
@@ -30,14 +26,14 @@ std::vector<Product> TokenDefinitions::Grammar {
   }),
   Product(TERM, {
     { POW },
-    { POW, STAR, TERM },
-    { POW, SLASH, TERM },
+    { POW, STAR, TERM},
+    { POW, SLASH, TERM},
   }), 
   Product(POW, {
     { FACT }, { FACT, POWER, POW },
   }),
   Product(FACT, {
-    { NUM }, { LP, EXPR, RP },
+    { NUM }, { LP, EXPR, RP }, { MINUS, FACT },
   }),
 };
 

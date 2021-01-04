@@ -20,6 +20,8 @@ long double Evaluator::eval(std::shared_ptr<Node> node) {
   if (oper == TokenType("STAR")) return eval(node->getSubnodes()[0]) * eval(node->getSubnodes()[2]);
   if (oper == TokenType("SLASH")) return eval(node->getSubnodes()[0]) / eval(node->getSubnodes()[2]);
   if (oper == TokenType("POWER")) return std::pow(eval(node->getSubnodes()[0]), eval(node->getSubnodes()[2]));
+
+  if (node->getType() == TokenType("FACT") && oper == TokenType("FACT")) return -eval(node);
   if (node->getType() == TokenType("FACT")) return eval(node->getSubnodes()[1]);
 
   throw std::string("Cannot evaluate");

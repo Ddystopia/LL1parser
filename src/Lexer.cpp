@@ -5,16 +5,11 @@
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
 
-using TokenDefinitions::statics;
-using TokenDefinitions::dynamics;
-
-const std::string EOI{"EOI"};
-
 Lexer::Lexer() {}
 
 std::vector<Token*> *Lexer::tokenize(const std::string &source){
-  auto lexems{new std::vector<Token*>};
-  lexems->reserve(source.length() + 1); // wont be bigger then source + EOI
+  auto lexems { new std::vector<Token*> };
+  lexems->reserve(source.length()); // wont be bigger then source 
   m_source = source;
 
   skipSpaces();
@@ -30,13 +25,13 @@ std::vector<Token*> *Lexer::tokenize(const std::string &source){
     skipSpaces();
   }
 
-  lexems->push_back(new Token(TokenType(EOI), EOI, m_offset)); // Exlution
-
   cleanUp();
   return lexems;
 }
 
 Token* Lexer::staticToken(){
+  using TokenDefinitions::statics;
+
   for(auto const &tokenDef: statics) {
     std::string rep(tokenDef.getRepres());
 
@@ -51,6 +46,8 @@ Token* Lexer::staticToken(){
 }
 
 Token* Lexer::dynamicToken(){
+  using TokenDefinitions::dynamics;
+
   for(auto const &tokenDef: dynamics) {
     std::regex rep(tokenDef.getRepres());
 

@@ -12,7 +12,7 @@ class TokenType {
   public:
     TokenType(std::string type);
     bool isProduct() const;
-    const std::string &getType() const { return m_type; };
+    const std::string &getStrType() const { return m_type; };
 
     friend bool operator==(const TokenType &left, const TokenType &right);
     friend bool operator!=(const TokenType &left, const TokenType &right);
