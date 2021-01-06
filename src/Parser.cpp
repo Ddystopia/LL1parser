@@ -12,7 +12,7 @@
 Parser::Parser() {}
 Parser::~Parser() { clear(); }
 
-std::shared_ptr<Node> Parser::parse(const std::string &source){
+std::shared_ptr<Node> Parser::parse(std::string &source){
   using TokenDefinitions::Grammar;
 
   Lexer lexer;
@@ -60,13 +60,13 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
 
 bool Parser::isCorrect(std::vector<TokenType> eqs) {
   bool res = eqs[0] == now()->getType() ;
-  bool res1 = eqs.size() == 1 || (peek() && (eqs[1] == peek()->getType() || eqs[1].isProduct()));
+  bool res1 = eqs.size() == 1 || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isProduct();
   if (eqs[0].isProduct()) {
     int memId { m_tokenId };
     setId(m_tokenId - 1);
     calc(eqs[0]);
     if (!hasError()) res = true;
-    res1 = eqs.size() == 1 || (peek() && (eqs[1] == peek()->getType() || eqs[1].isProduct()));
+    res1 = eqs.size() == 1 || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isProduct();
     setError("");
     setId(memId);
   }

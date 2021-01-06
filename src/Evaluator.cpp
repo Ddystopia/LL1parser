@@ -13,6 +13,7 @@ long double Evaluator::eval(std::shared_ptr<Node> node) {
   if (node->getSubnodes().size() == 1) return eval(node->getSubnodes()[0]);
   if (node->getType() == TokenType("NUM")) return stold(node->getValue());
 
+  node->reverseSubnodes();
   TokenType oper { node->getSubnodes()[1]->getType() };
 
   if (oper == TokenType("PLUS")) return eval(node->getSubnodes()[0]) + eval(node->getSubnodes()[2]);
@@ -21,7 +22,7 @@ long double Evaluator::eval(std::shared_ptr<Node> node) {
   if (oper == TokenType("SLASH")) return eval(node->getSubnodes()[0]) / eval(node->getSubnodes()[2]);
   if (oper == TokenType("POWER")) return std::pow(eval(node->getSubnodes()[0]), eval(node->getSubnodes()[2]));
 
-  if (node->getType() == TokenType("FACT") && oper == TokenType("FACT")) return -eval(node);
+  if (node->getType() == TokenType("FACT") && oper == TokenType("MINUS")) return -eval(node);
   if (node->getType() == TokenType("FACT")) return eval(node->getSubnodes()[1]);
 
   throw std::string("Cannot evaluate");

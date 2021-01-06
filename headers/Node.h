@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <algorithm>
 #include "../headers/Token.h"
 
 class Node {
@@ -17,6 +18,7 @@ class Node {
     TokenType getType() const { return m_type; };
     const std::string &getValue() const { return m_value; };
     const std::vector<std::shared_ptr<Node>> &getSubnodes() const { return m_subnodes; }
+    void reverseSubnodes() { std::reverse(m_subnodes.begin(), m_subnodes.end()); };
 };
 
 #endif

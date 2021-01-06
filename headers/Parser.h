@@ -40,7 +40,7 @@ class Parser {
  public:
     Parser();
     ~Parser();
-    std::shared_ptr<Node> parse(const std::string &source);
+    std::shared_ptr<Node> parse(std::string &source);
 };
 
 #endif
