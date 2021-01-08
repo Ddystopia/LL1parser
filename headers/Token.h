@@ -9,9 +9,11 @@
 class TokenType {
   private:
     std::string m_type;
+
   public:
     TokenType(std::string type);
-    bool isProduct() const;
+    bool isNonterminal() const;
+    bool hasEpsilon() const;
     const std::string &getStrType() const { return m_type; };
 
     friend bool operator==(const TokenType &left, const TokenType &right);

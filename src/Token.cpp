@@ -27,23 +27,27 @@ TokenType::TokenType(std::string type)
   : m_type(type)
 {}
 
-bool TokenType::isProduct() const {
-  using TokenDefinitions::Grammar;
-  auto prod = std::find_if(Grammar.begin(), Grammar.end(), 
-      [this](Product &prod) -> bool { return prod.getType() == *this; });
+bool TokenType::isNonterminal() const {
+  return Product::getProd(*this);
+}
 
-  return prod != Grammar.end();
+bool TokenType::hasEpsilon() const {
+  const Product* prod { Product::getProd(*this) };
+
+  return prod && 
+    0 != std::count_if(prod->getEqualents().begin(), prod->getEqualents().end(), 
+        [](auto el) { return el.size() == 0; });
 }
 
 bool operator==(const TokenType &left, const TokenType &right) {
   return left.m_type == right.m_type;
 }
 
-bool operator!=(const TokenType &left, const TokenType &right){
+bool operator!=(const TokenType &left, const TokenType &right) {
   return left.m_type != right.m_type;
 }
 
-bool operator<(const TokenType &left, const TokenType &right){
+bool operator<(const TokenType &left, const TokenType &right) {
   return left.m_type < right.m_type;
 }
 
@@ -52,7 +56,6 @@ Product::Product(TokenType type,
   : m_type(type), m_equalentSeries(std::vector<std::vector<TokenType>>())
 {
   for (auto const &eq: eqs) {
-    assert(eq.size() > 0);
     m_equalentSeries.push_back(std::vector<TokenType>(eq));
   }
 
@@ -63,8 +66,10 @@ Product::Product(TokenType type,
 
 const Product *Product::getProd(TokenType token) {
   using TokenDefinitions::Grammar;
-  return &*std::find_if(Grammar.begin(), Grammar.end(),
+  auto prod = std::find_if(Grammar.begin(), Grammar.end(),
       [token](Product prod) -> bool { return prod.getType() == token; });
+  if (prod == Grammar.end()) return nullptr;
+  return &*prod;
 }
 
 

@@ -4,8 +4,11 @@
 
 // Non-terminals
 const TokenType EXPR = TokenType("EXPR");
+const TokenType EXPR2 = TokenType("EXPR'");
 const TokenType TERM = TokenType("TERM");
+const TokenType TERM2 = TokenType("TERM'");
 const TokenType POW = TokenType("POW");
+const TokenType POW2 = TokenType("POW'");
 const TokenType FACT = TokenType("FACT");
 // Terminals
 const TokenType PLUS = TokenType("PLUS");
@@ -20,17 +23,22 @@ const TokenType WORD = TokenType("WORD");
 
 std::vector<Product> TokenDefinitions::Grammar {
   Product(EXPR, {
-    { TERM },
-    { TERM, PLUS, EXPR },
-    { TERM, MINUS, EXPR },
+    { TERM, EXPR2 }
+  }),
+  Product(EXPR2, {
+    { PLUS, TERM, EXPR2 }, { MINUS, TERM, EXPR2 }, {}
   }),
   Product(TERM, {
-    { POW },
-    { POW, STAR, TERM},
-    { POW, SLASH, TERM},
+    { POW, TERM2 }
+  }), 
+  Product(TERM2, {
+    { STAR, POW, TERM2 }, { SLASH, POW, TERM2 }, {}
   }), 
   Product(POW, {
-    { FACT }, { FACT, POWER, POW },
+    { FACT, POW2 }, 
+  }),
+  Product(POW2, {
+    { POWER, FACT, POW2}, {}
   }),
   Product(FACT, {
     { NUM }, { LP, EXPR, RP }, { MINUS, FACT },
@@ -39,25 +47,20 @@ std::vector<Product> TokenDefinitions::Grammar {
 
 // std::vector<Product> TokenDefinitions::Grammar {
 //   Product(EXPR, {
-//     { SUM }, { DER },
-//   }), 
-//   Product(SUM, {
-//     { MUL }, { DIV }, { MUL, PLUS, EXPR }, { DIV, PLUS, EXPR }
-//   }), 
-//   Product(DER, {
-//     { MUL }, { DIV }, { MUL, MINUS, EXPR }, { DIV, MINUS, EXPR }
-//   }), 
-//   Product(MUL, {
-//     { POW }, { POW, STAR, MUL }, { POW, STAR, DIV }
+//     { TERM },
+//     { TERM, PLUS, EXPR },
+//     { TERM, MINUS, EXPR },
 //   }),
-//   Product(DIV, {
-//     { POW }, { POW, SLASH, DER }, { POW, SLASH, MUL }
-//   }),
+//   Product(TERM, {
+//     { POW },
+//     { POW, STAR, TERM},
+//     { POW, SLASH, TERM},
+//   }), 
 //   Product(POW, {
 //     { FACT }, { FACT, POWER, POW },
 //   }),
 //   Product(FACT, {
-//     { NUM }, { LP, EXPR, RP },
+//     { NUM }, { LP, EXPR, RP }, { MINUS, FACT },
 //   }),
 // };
 

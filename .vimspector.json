@@ -5,7 +5,7 @@
       "configuration": {
         "request": "launch",
         "program": "${workspaceRoot}/build/run",
-        "args": ["1"],
+        "args": ["3-2+1"],
         "cwd": "${workspaceRoot}",
         "environment": [],
         "externalConsole": true,

@@ -20,8 +20,8 @@ std::shared_ptr<Node> Parser::parse(std::string &source){
 
   std::shared_ptr<Node> result(calc(Grammar[0].getType()));
   
-  // +1 - index by tokens + EOI, -1 - get last index
-  if (m_tokenId != m_tokens->size() - 1) setError("Unknown Error");
+  // +1 - index by tokens 
+  if (!hasError() && m_tokenId != m_tokens->size() - 1) setError("Unknown Error");
   if (hasError()) throw m_error;
 
   clear();
@@ -30,7 +30,7 @@ std::shared_ptr<Node> Parser::parse(std::string &source){
 
 std::shared_ptr<Node> Parser::calc(TokenType token) {
   if (hasError()) return nullptr;
-  if (!token.isProduct())
+  if (!token.isNonterminal())
     return std::make_shared<Node>(get());
 
   // memorization
@@ -59,14 +59,16 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
 }
 
 bool Parser::isCorrect(std::vector<TokenType> eqs) {
+  if (eqs.empty()) return true; // is epsilon
+  if (!now()) return false;
   bool res = eqs[0] == now()->getType() ;
-  bool res1 = eqs.size() == 1 || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isProduct();
-  if (eqs[0].isProduct()) {
+  bool res1 = eqs.size() == 1 || eqs[1].hasEpsilon() || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isNonterminal();
+  if (eqs[0].isNonterminal()) {
     int memId { m_tokenId };
     setId(m_tokenId - 1);
     calc(eqs[0]);
     if (!hasError()) res = true;
-    res1 = eqs.size() == 1 || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isProduct();
+    res1 = eqs.size() == 1 || eqs[1].hasEpsilon() || peek() && (eqs[1] == peek()->getType()) || peek() && eqs[1].isNonterminal();
     setError("");
     setId(memId);
   }
@@ -83,6 +85,7 @@ const std::vector<TokenType> *Parser::getEq(std::vector<std::vector<TokenType>> 
 }
 
 const Token* Parser::now(){
+  if (m_tokenId >= static_cast<int>(m_tokens->size())) return nullptr;
   return m_tokens->at(m_tokenId);
 }
 
@@ -92,7 +95,7 @@ const Token* Parser::peek(){
 }
 
 const Token* Parser::get(){
-  if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return nullptr;
+  if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return ++m_tokenId, nullptr;
   return m_tokens->at(++m_tokenId);
 }
 
