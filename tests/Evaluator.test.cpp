@@ -20,6 +20,13 @@ TEST(EvalTests, PlusSimpleEval) {
   ASSERT_EQ(result, 1+1);
 }
 
+TEST(EvalTests, UnatySimpleEval) {
+  std::string input("1--1");
+  long double result { evaluator.eval(parserEv.parse(input)) };
+
+  ASSERT_EQ(result, 1-(-1));
+}
+
 TEST(EvalTests, MulAndMinusSimpleEval) {
   std::string input("15-2*3");
   long double result { evaluator.eval(parserEv.parse(input)) };

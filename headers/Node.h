@@ -9,9 +9,9 @@
 
 class Node {
   private: 
-    std::string m_value{""};
+    std::string m_value {""};
     TokenType m_type;
-    std::vector<std::shared_ptr<Node>> m_subnodes{};
+    std::vector<std::shared_ptr<Node>> m_subnodes {};
   public: 
     Node(const Token* token);
     Node(TokenType type, const std::vector<std::shared_ptr<Node>> &subnodes);

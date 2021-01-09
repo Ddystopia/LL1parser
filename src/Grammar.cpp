@@ -41,28 +41,9 @@ std::vector<Product> TokenDefinitions::Grammar {
     { POWER, FACT, POW2}, {}
   }),
   Product(FACT, {
-    { NUM }, { LP, EXPR, RP }, { MINUS, FACT },
+    { NUM }, { LP, EXPR, RP }, { MINUS, FACT }, { PLUS, FACT },
   }),
 };
-
-// std::vector<Product> TokenDefinitions::Grammar {
-//   Product(EXPR, {
-//     { TERM },
-//     { TERM, PLUS, EXPR },
-//     { TERM, MINUS, EXPR },
-//   }),
-//   Product(TERM, {
-//     { POW },
-//     { POW, STAR, TERM},
-//     { POW, SLASH, TERM},
-//   }), 
-//   Product(POW, {
-//     { FACT }, { FACT, POWER, POW },
-//   }),
-//   Product(FACT, {
-//     { NUM }, { LP, EXPR, RP }, { MINUS, FACT },
-//   }),
-// };
 
 std::vector<StaticTokenDefinition> TokenDefinitions::statics {
   StaticTokenDefinition("+", PLUS),

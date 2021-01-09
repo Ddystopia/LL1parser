@@ -14,7 +14,7 @@ class TokenType {
     TokenType(std::string type);
     bool isNonterminal() const;
     bool hasEpsilon() const;
-    const std::string &getStrType() const { return m_type; };
+    const std::string &getStrType() const { return m_type; }; // for debug, dont use it for productoin
 
     friend bool operator==(const TokenType &left, const TokenType &right);
     friend bool operator!=(const TokenType &left, const TokenType &right);
@@ -37,6 +37,21 @@ class Token {
     const int &getOffset() const { return m_offset; };
 };
 
+class Product {
+  typedef std::vector< std::vector<TokenType> > eqv;
+
+  private:
+    TokenType m_type;
+    eqv m_equalentSeries;
+
+  public:
+    Product(TokenType type, 
+      std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
+    const TokenType &getType() const { return m_type; };
+    const eqv &getEqualents() const { return m_equalentSeries; };
+    static const Product *getProd(TokenType token);
+};
+// for lexer
 template <class T>
 class TokenDefinition {
   private:
@@ -58,23 +73,8 @@ class DynamicTokenDefinition : public TokenDefinition<std::regex> {
     DynamicTokenDefinition(std::string repres, TokenType type);
 };
 
-class Product {
-  typedef std::vector< std::vector<TokenType> > eqv;
-
-  private:
-    TokenType m_type;
-    eqv m_equalentSeries;
-
-  public:
-    Product(TokenType type, 
-      std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
-    const TokenType &getType() const { return m_type; };
-    const eqv &getEqualents() const { return m_equalentSeries; };
-    static const Product *getProd(TokenType token);
-};
-
 namespace TokenDefinitions {
-  // Non-terminal
+  // Nonterminal
   extern std::vector<Product> Grammar;
   // Terminal
   extern std::vector<StaticTokenDefinition> statics;

@@ -10,7 +10,7 @@ class Lexer {
   private:
     int m_offset {0};
     std::string_view m_source {};
-    const std::vector<char> m_spaces{' ', '\n', '\t', '\r'};
+    const std::vector<char> m_spaces {' ', '\n', '\t', '\r'};
 
   public:
     Lexer();
@@ -21,7 +21,6 @@ class Lexer {
     void cleanUp();
     Token* staticToken();
     Token* dynamicToken();
-  
 };
 
 #endif
