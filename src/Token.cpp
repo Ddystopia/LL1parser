@@ -27,18 +27,6 @@ TokenType::TokenType(std::string type)
   : m_type(type)
 {}
 
-bool TokenType::isNonterminal() const {
-  return Product::getProd(*this);
-}
-
-bool TokenType::hasEpsilon() const {
-  const Product* prod { Product::getProd(*this) };
-
-  return prod && 
-    0 != std::count_if(prod->getEqualents().begin(), prod->getEqualents().end(), 
-        [](auto el) { return el.size() == 0; });
-}
-
 bool operator==(const TokenType &left, const TokenType &right) {
   return left.m_type == right.m_type;
 }
@@ -63,13 +51,4 @@ Product::Product(TokenType type,
       [](auto &a, auto &b) -> bool { return a.size() > b.size(); }
   );
 }
-
-const Product *Product::getProd(TokenType token) {
-  using TokenDefinitions::Grammar;
-  auto prod = std::find_if(Grammar.begin(), Grammar.end(),
-      [token](Product prod) -> bool { return prod.getType() == token; });
-  if (prod == Grammar.end()) return nullptr;
-  return &*prod;
-}
-
 

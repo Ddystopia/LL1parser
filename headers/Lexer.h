@@ -12,8 +12,14 @@ class Lexer {
     std::string_view m_source {};
     const std::vector<char> m_spaces {' ', '\n', '\t', '\r'};
 
+    std::vector<StaticTokenDefinition> statics;
+    std::vector<DynamicTokenDefinition> dynamics;
+
   public:
-    Lexer();
+    Lexer(
+        std::vector<StaticTokenDefinition> &&statics, 
+        std::vector<DynamicTokenDefinition> &&dynamics
+    );
     std::vector<Token*> *tokenize(const std::string &source);
 
     bool inBounds();

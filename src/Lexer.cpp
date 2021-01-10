@@ -5,8 +5,12 @@
 #include "../headers/Lexer.h"
 #include "../headers/Token.h"
 
-Lexer::Lexer() {}
-
+Lexer::Lexer(
+  std::vector<StaticTokenDefinition> &&statics, 
+  std::vector<DynamicTokenDefinition> &&dynamics
+) : statics(statics), dynamics(dynamics)
+{}
+ 
 std::vector<Token*> *Lexer::tokenize(const std::string &source){
   auto lexems { new std::vector<Token*> };
   lexems->reserve(source.length()); // wont be bigger then source 
@@ -30,8 +34,6 @@ std::vector<Token*> *Lexer::tokenize(const std::string &source){
 }
 
 Token* Lexer::staticToken(){
-  using TokenDefinitions::statics;
-
   for(auto const &tokenDef: statics) {
     std::string rep(tokenDef.getRepres());
 
@@ -46,8 +48,6 @@ Token* Lexer::staticToken(){
 }
 
 Token* Lexer::dynamicToken(){
-  using TokenDefinitions::dynamics;
-
   for(auto const &tokenDef: dynamics) {
     std::regex rep(tokenDef.getRepres());
 

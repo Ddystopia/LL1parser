@@ -7,10 +7,10 @@ If you wanna help me, you'll can make a pull requests :3
 
 ## Using
 
-You shoud provide your LL(1) (!!!!!) in src/Grammar.cpp.
-In future I'll provide comfortable API and will make library from this.
+You shoud provide your LL(1) (!!!!!) in arguments to constructor of parser.
+If you provide not LL(1) grammar anithig might happend.
+Parser.parse will return std::shared_ptr\<Node> - the top elenent of AST.
 
 ## Testing
 
-I wrote tests only for grammar in src/Grammar.cpp.
-If you change it tests will falling, in future i fix it
+Compile all files without src/main.cpp and run

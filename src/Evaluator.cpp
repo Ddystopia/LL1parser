@@ -28,12 +28,12 @@
 long double Evaluator::eval(std::shared_ptr<Node> node) {
   std::vector<std::shared_ptr<Node>> subs { node->getSubnodes() };
 
-  if (node->getType().isNonterminal() && (subs.size() == 1 || subs[1]->getSubnodes().size() == 0)) return eval(subs[0]);
-
   if (node->getType() == TokenType("NUM")) return stold(node->getValue());
   if (node->getType() == TokenType("FACT") && subs[0]->getType() == TokenType("LP")) return eval(node->getSubnodes()[1]);
   if (node->getType() == TokenType("FACT") && subs[0]->getType() == TokenType("MINUS")) return -eval(subs[1]);
   if (node->getType() == TokenType("FACT") && subs[0]->getType() == TokenType("PLUS")) return +eval(subs[1]);
+
+  if (subs.size() == 1 || subs[1]->getSubnodes().size() == 0) return eval(subs[0]);
  
   if (node->getType() == TokenType("EXPR")) CALC_SUBS("PLUS", +, -)
   if (node->getType() == TokenType("TERM")) CALC_SUBS("STAR", *, /)

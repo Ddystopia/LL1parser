@@ -9,13 +9,16 @@
 
 #include <iostream>
 
-Parser::Parser() {}
+Parser::Parser(
+  std::vector<Product> &&grammar,
+  std::vector<StaticTokenDefinition> &&statics,
+  std::vector<DynamicTokenDefinition> &&dynamics
+) : Grammar(grammar), lexer(std::move(statics), std::move(dynamics))
+{}
+ 
 Parser::~Parser() { clear(); }
 
 std::shared_ptr<Node> Parser::parse(std::string &source){
-  using TokenDefinitions::Grammar;
-
-  Lexer lexer;
   m_tokens = lexer.tokenize(source);
 
   std::shared_ptr<Node> result(calc(Grammar[0].getType()));
@@ -30,7 +33,7 @@ std::shared_ptr<Node> Parser::parse(std::string &source){
 
 std::shared_ptr<Node> Parser::calc(TokenType token) {
   if (hasError()) return nullptr;
-  if (!token.isNonterminal())
+  if (!isNonterminal(token))
     return std::make_shared<Node>(get());
 
   // memorization
@@ -42,7 +45,7 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
   }
 
   get(); // shift be one to get correct now()
-  auto eqs(Product::getProd(token)->getEqualents()); 
+  auto eqs(getProd(token)->getEqualents()); 
   std::vector<std::shared_ptr<Node>> stack {};
   const std::vector<TokenType>* eq { getEq(eqs) };
 
@@ -62,14 +65,14 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
 bool Parser::isCorrect(std::vector<TokenType> &eqs) {
   auto checkLookahead ( [&](){
     return ( eqs.size() == 1 /* dont need lookahead */ ||
-    eqs[1].hasEpsilon() /* epsilon allways true */ || 
+    hasEpsilon(eqs[1]) /* epsilon allways true */ || 
     peek() && (eqs[1] == peek()->getType()) /* lookahead is correct */ || 
-    peek() && eqs[1].isNonterminal() /* cannot check lookahead -> true cus this has LL(1) grammar */);
+    peek() && isNonterminal(eqs[1]) /* cannot check lookahead -> true cus this has LL(1) grammar */);
   }); // lol, js
 
   if (eqs.empty()) return true; // is epsilon, allways true
   if (!now()) return false; // no tokens
-  if (!eqs[0].isNonterminal()) // simple check for terminal symbols
+  if (!isNonterminal(eqs[0])) // simple check for terminal symbols
     return eqs[0] == now()->getType() && checkLookahead();
 
   int memId { m_tokenId }; // store id
@@ -89,19 +92,38 @@ const std::vector<TokenType> *Parser::getEq(std::vector<std::vector<TokenType>> 
   return nullptr;
 }
 
-const Token* Parser::now(){
+const Token* Parser::now() const {
   if (m_tokenId >= static_cast<int>(m_tokens->size())) return nullptr;
   return m_tokens->at(m_tokenId);
 }
 
-const Token* Parser::peek(){
+const Token* Parser::peek() const {
   if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return nullptr;
   return m_tokens->at(m_tokenId + 1);
 }
 
 const Token* Parser::get(){
-  if (m_tokenId + 1 >= static_cast<int>(m_tokens->size())) return ++m_tokenId, nullptr;
-  return m_tokens->at(++m_tokenId);
+  ++m_tokenId;
+  return now();
+}
+
+const Product * Parser::getProd(TokenType token) const {
+  auto prod = std::find_if(Grammar.begin(), Grammar.end(),
+      [token](Product prod) -> bool { return prod.getType() == token; });
+  if (prod == Grammar.end()) return nullptr;
+  return &*prod;
+}
+
+bool Parser::isNonterminal(TokenType token) const {
+  return getProd(token);
+}
+
+bool Parser::hasEpsilon(TokenType token) const {
+  const Product* prod { getProd(token) };
+
+  return prod && 
+    0 != std::count_if(prod->getEqualents().begin(), prod->getEqualents().end(), 
+        [](auto el) { return el.size() == 0; });
 }
 
 void Parser::memorize(std::pair<int, TokenType> lockation, LockationData data) {

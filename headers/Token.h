@@ -12,8 +12,6 @@ class TokenType {
 
   public:
     TokenType(std::string type);
-    bool isNonterminal() const;
-    bool hasEpsilon() const;
     const std::string &getStrType() const { return m_type; }; // for debug, dont use it for productoin
 
     friend bool operator==(const TokenType &left, const TokenType &right);
@@ -49,7 +47,6 @@ class Product {
       std::initializer_list<std::initializer_list<TokenType>> equalentSeries);
     const TokenType &getType() const { return m_type; };
     const eqv &getEqualents() const { return m_equalentSeries; };
-    static const Product *getProd(TokenType token);
 };
 // for lexer
 template <class T>
@@ -72,13 +69,4 @@ class DynamicTokenDefinition : public TokenDefinition<std::regex> {
   public:
     DynamicTokenDefinition(std::string repres, TokenType type);
 };
-
-namespace TokenDefinitions {
-  // Nonterminal
-  extern std::vector<Product> Grammar;
-  // Terminal
-  extern std::vector<StaticTokenDefinition> statics;
-  extern std::vector<DynamicTokenDefinition> dynamics;
-}
-
 #endif
