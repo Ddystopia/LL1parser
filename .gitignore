@@ -1,5 +1,5 @@
-build
-!build/CMakeLists.txt
+build/*
+!build/Makefile
 
 tests/runtests
 

@@ -4,7 +4,7 @@
       "adapter": "vscode-cpptools",
       "configuration": {
         "request": "launch",
-        "program": "${workspaceRoot}/build/run",
+        "program": "${workspaceRoot}/build/debug",
         "args": ["-5"],
         "cwd": "${workspaceRoot}",
         "environment": [],
