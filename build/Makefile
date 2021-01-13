@@ -1,61 +1,42 @@
-.PHONY: all debug run test clean
+.PHONY: all run test clean
 
-CC=g++
-CFAGS=-std=c++17 
+CC = g++
+CFAGS = -std=c++17 -ggdb -g3
 
-MAIN_EXEC=run
-MAIN_FILE=main.o
-MAIN_OBJECTS=lexer.o parser.o token.o node.o evaluator.o
+MAIN_FILE = ../src/main.cpp
+SOURCES = ../src/Lexer.cpp ../src/Parser.cpp ../src/Token.cpp ../src/Node.cpp ../src/Evaluator.cpp
+TESTS = ../tests/Tests.cpp ../tests/Parser.test.cpp ../tests/Lexer.test.cpp ../tests/Evaluator.test.cpp
 
-TEST_EXEC=../tests/runtests
-TEST_CFLAGS=-lgtest -lgtest_main -pthread
-TEST_OBJECTS=test.o parser.test.o lexer.test.o evaluator.test.o
+MAIN_EXEC = run
+MAIN_FILE_O = $(subst ../src/,,$(MAIN_FILE:.cpp=.o))
+MAIN_OBJECTS = $(subst ../src/,,$(SOURCES:.cpp=.o))
 
-DEBUG_EXEC=debug
-DEBUG_CFLAGS=-ggdb -g3
+TEST_EXEC = ../tests/runtests
+TEST_CFLAGS = -lgtest -lgtest_main -pthread
+TEST_OBJECTS = $(subst ../tests/,,$(TESTS:.cpp=.o))
 
-all: run
+# Syntax:
+# [target]: [dependent....]
+#   [command]
+#
+# $@ - name of target
+# $< - name of first dependensy
+# $^ - all dependensies
 
-run: $(MAIN_OBJECTS)
-	$(CC) $(CFAGS) $^ $(MAIN_FILE) -o $(MAIN_EXEC)
+all: $(MAIN_FILE) $(SOURCES) run test
 
-debug: $(MAIN_OBJECTS)
-	$(CC) $(CFAGS) $(DEBUG_CFLAGS) $(MAIN_FILE) $^ -o $(DEBUG_EXEC)
+run: $(MAIN_FILE_O) $(MAIN_OBJECTS)
+	$(CC) $(CFAGS) $^ -o $(MAIN_EXEC)
 
-test: $(TEST_OBJECTS) $(MAIN_OBJECTS)
+test: $(MAIN_OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(CFAGS) $(TEST_CFLAGS) $^ -o $(TEST_EXEC)
 
 clean:
-	rm -rf *.o $(MAIN_EXEC) $(TEST_EXEC) $(DEBUG_EXEC)
+	rm -rf *.o $(MAIN_EXEC) $(TEST_EXEC)
 
-
-main.o: ../src/main.cpp
+%.o: ../tests/%.cpp
 	$(CC) $(CFAGS) -c $< -o $@
 
-lexer.o: ../src/Lexer.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-parser.o: ../src/Parser.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-token.o: ../src/Token.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-node.o: ../src/Node.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-evaluator.o: ../src/Evaluator.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-test.o: ../tests/Tests.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-parser.test.o: ../tests/Parser.test.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-lexer.test.o: ../tests/Lexer.test.cpp
-	$(CC) $(CFAGS) -c $< -o $@
-
-evaluator.test.o: ../tests/Evaluator.test.cpp
+%.o : ../src/%.cpp
 	$(CC) $(CFAGS) -c $< -o $@
 

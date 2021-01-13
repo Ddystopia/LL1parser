@@ -46,7 +46,9 @@ Parser parser {
       { POWER, FACT, POW2}, {}
     } },
     { FACT, {
-      { NUM }, { LP, EXPR, RP }, { MINUS, FACT }, { PLUS, FACT },
+      { NUM }, { LP, EXPR, RP }, 
+      { MINUS, FACT }, { PLUS, FACT },
+      { WORD, LP, EXPR, RP }
     } },
   },
   {
@@ -60,7 +62,7 @@ Parser parser {
   },
   {
     { "[0-9]+(\\.[0-9]+)?", NUM },
-    //DynamicTokenDefinition("[a-zA-Z_][a-zA-Z_-?]*", WORD),
+    { "[a-zA-Z_]+", WORD },
   } 
 };
 
