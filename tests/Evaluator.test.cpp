@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <cmath>
 #include "../headers/Parser.h"
 #include "../headers/Evaluator.h"
 
@@ -37,10 +38,7 @@ Parser parserEv {
       { STAR, POW, TERM2 }, { SLASH, POW, TERM2 }, {}
     } }, 
     { POW, {
-      { FACT, POW2 }, 
-    } },
-    { POW2, {
-      { POWER, FACT, POW2}, {}
+      { FACT }, { FACT, POWER, POW }
     } },
     { FACT, {
       { NUM }, { LP, EXPR, RP }, { MINUS, FACT }, { PLUS, FACT },
@@ -92,6 +90,13 @@ TEST(EvalTests, MulAndMinusSimpleEval) {
   ASSERT_EQ(result, 15-2*3);
 }
 
+TEST(EvalTests, PowerEval) {
+  std::string input("2^2^3");
+  long double result { evaluator.eval(parserEv.parse(input)) };
+
+  ASSERT_EQ(result, std::pow(2, std::pow(2, 3)));
+}
+
 TEST(EvalTests, BracketsTest) {
   std::string input("(15-2)*3");
   long double result { evaluator.eval(parserEv.parse(input)) };
@@ -100,8 +105,8 @@ TEST(EvalTests, BracketsTest) {
 }
 
 TEST(EvalTests, AllOpersTest) {
-  std::string input("15*3/4*(3+4*2)-8*1");
+  std::string input("15*3/4*(3+4*2^2)-8*1");
   long double result { evaluator.eval(parserEv.parse(input)) };
 
-  ASSERT_EQ(result, 15.0*3/4*(3+4*2)-8*1);
+  ASSERT_EQ(result, 15.0*3/4*(3+4*std::pow(2, 2))-8*1);
 }

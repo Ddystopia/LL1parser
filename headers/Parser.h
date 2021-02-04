@@ -9,7 +9,7 @@
 #include "../headers/Token.h"
 #include "../headers/Node.h"
 
-struct LockationData {
+struct LocationData {
   std::shared_ptr<Node> node;
   std::string error;
   int tokenId;
@@ -25,7 +25,7 @@ class Parser {
     std::vector<Token*> *m_tokens { nullptr };
     std::map<
       std::pair<int, TokenType>, 
-      LockationData
+      LocationData
     > m_cache;
     
     std::shared_ptr<Node> calc (TokenType token);
@@ -42,7 +42,7 @@ class Parser {
     bool hasError() const { return m_error.size() != 0; };
 
     void setId(int id) { m_tokenId = id; };
-    void memorize(std::pair<int, TokenType> lockation, LockationData data);
+    void memorize(std::pair<int, TokenType> location, LocationData data);
     void setError(std::string &&err) { m_error = err; };
     void clear();
  public:

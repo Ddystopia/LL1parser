@@ -61,14 +61,13 @@ long double Evaluator::eval(std::shared_ptr<Node> node) {
     return fn->second(eval(subs[2]));
   }
 
-  if (subs.size() == 1 || subs[1]->getSubnodes().size() == 0) return eval(subs[0]);
+  if (subs.size() == 1) return eval(subs[0]);
+  if (subs[1]->getSubnodes().size() == 0 && subs.size() == 2) return eval(subs[0]);
  
   if (node->getType() == TokenType("EXPR")) CALC_SUBS("PLUS", +, -)
   if (node->getType() == TokenType("TERM")) CALC_SUBS("STAR", *, /)
 
-  if (node->getType() == TokenType("POW")) return std::pow(eval(subs[0]), eval(subs[1]));
-  if (node->getType() == TokenType("POW'")) 
-    return std::pow(eval(subs[1]), subs[2]->getSubnodes().size() > 0 ? eval(subs[2]) : 1);
+  if (node->getType() == TokenType("POW")) return std::pow(eval(subs[0]), eval(subs[2]));
 
   throw std::string("Cannot evaluate");
 }

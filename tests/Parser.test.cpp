@@ -48,10 +48,7 @@ Parser parser {
       { STAR, POW, TERM2 }, { SLASH, POW, TERM2 }, {}
     } }, 
     { POW, {
-      { FACT, POW2 }, 
-    } },
-    { POW2, {
-      { POWER, FACT, POW2}, {}
+      { FACT }, { FACT, POWER, POW }
     } },
     { FACT, {
       { NUM }, { LP, EXPR, RP }, { MINUS, FACT }, { PLUS, FACT },

@@ -22,6 +22,7 @@ TEST_OBJECTS = $(subst ../tests/,,$(TESTS:.cpp=.o))
 # $@ - name of target
 # $< - name of first dependensy
 # $^ - all dependensies
+# %  - template
 
 all: $(MAIN_FILE) $(SOURCES) run test
 

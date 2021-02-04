@@ -5,7 +5,7 @@
       "configuration": {
         "request": "launch",
         "program": "${workspaceRoot}/build/run",
-        "args": ["sin(1)"],
+        "args": ["2^3"],
         "cwd": "${workspaceRoot}",
         "environment": [],
         "externalConsole": true,

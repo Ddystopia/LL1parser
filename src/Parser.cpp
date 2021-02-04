@@ -37,8 +37,8 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
     return std::make_shared<Node>(get());
 
   // memorization
-  std::pair<int, TokenType> lockation{ m_tokenId, token }; 
-  if (auto node(m_cache.find(lockation)); node != m_cache.end()) { // if in cache we have the same node
+  std::pair<int, TokenType> location{ m_tokenId, token }; 
+  if (auto node(m_cache.find(location)); node != m_cache.end()) { // if in cache we have the same node
     setId(node->second.tokenId); // set id from memory
     setError(std::string(node->second.error)); // set error from memory
     return node->second.node; // return node from memory
@@ -58,16 +58,18 @@ std::shared_ptr<Node> Parser::calc(TokenType token) {
 
   // if has error return nullptr, else create new node from stack
   std::shared_ptr<Node> result { hasError() ? nullptr : std::make_shared<Node>(token, stack) }; 
-  memorize(lockation, LockationData{result, m_error, m_tokenId}); // memorize
+  memorize(location, LocationData{result, m_error, m_tokenId}); // memorize
   return result;
 }
 
 bool Parser::isCorrect(std::vector<TokenType> &eqs) {
   auto checkLookahead ( [&](){
-    return ( eqs.size() == 1 /* dont need lookahead */ ||
-    hasEpsilon(eqs[1]) /* epsilon allways true */ || 
-    peek() && (eqs[1] == peek()->getType()) /* lookahead is correct */ || 
-    peek() && isNonterminal(eqs[1]) /* cannot check lookahead -> true cus this has LL(1) grammar */);
+    return ( 
+      eqs.size() == 1                         || // dont need lookahead
+      hasEpsilon(eqs[1])                      || // if epsilon then allways true
+      peek() && (eqs[1] == peek()->getType()) || // lookahead is correct 
+      peek() && isNonterminal(eqs[1])
+    ); 
   }); // lol, js
 
   if (eqs.empty()) return true; // is epsilon, allways true
@@ -109,7 +111,8 @@ const Token* Parser::get(){
 
 const Product * Parser::getProd(TokenType token) const {
   auto prod = std::find_if(Grammar.begin(), Grammar.end(),
-      [token](Product prod) -> bool { return prod.getType() == token; });
+    [token](Product prod) { return prod.getType() == token; });
+
   if (prod == Grammar.end()) return nullptr;
   return &*prod;
 }
@@ -126,8 +129,8 @@ bool Parser::hasEpsilon(TokenType token) const {
         [](auto el) { return el.size() == 0; });
 }
 
-void Parser::memorize(std::pair<int, TokenType> lockation, LockationData data) {
-  m_cache.insert(std::make_pair(lockation, data));
+void Parser::memorize(std::pair<int, TokenType> location, LocationData data) {
+  m_cache.insert(std::make_pair(location, data));
 }
 
 void Parser::clear(){

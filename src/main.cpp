@@ -12,7 +12,6 @@ const TokenType EXPR2 = TokenType("EXPR'");
 const TokenType TERM = TokenType("TERM");
 const TokenType TERM2 = TokenType("TERM'");
 const TokenType POW = TokenType("POW");
-const TokenType POW2 = TokenType("POW'");
 const TokenType FACT = TokenType("FACT");
 // Terminals
 const TokenType PLUS = TokenType("PLUS");
@@ -40,10 +39,7 @@ Parser parser {
       { STAR, POW, TERM2 }, { SLASH, POW, TERM2 }, {}
     } }, 
     { POW, {
-      { FACT, POW2 }, 
-    } },
-    { POW2, {
-      { POWER, FACT, POW2}, {}
+      { FACT }, { FACT, POWER, POW }
     } },
     { FACT, {
       { NUM }, { LP, EXPR, RP }, 
@@ -59,6 +55,7 @@ Parser parser {
     { "(", LP },
     { ")", RP },
     { "^", POWER },
+    { "*", POWER },
   },
   {
     { "[0-9]+(\\.[0-9]+)?", NUM },
