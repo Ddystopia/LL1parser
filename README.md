@@ -7,10 +7,11 @@ If you wanna help me, you'll can make a pull requests :3
 
 ## Using
 
-You shoud provide your LL(1) (!!!!!) in arguments to constructor of parser.
-If you provide not LL(1) grammar anithig might happend.
+You shoud to provide your LL(1) (!!!!!) in arguments to constructor of parser.
+If you provide not LL(1) grammar anythig might happend.
 Parser.parse will return std::shared_ptr\<Node> - the top elenent of AST.
 
 ## Testing
 
-Compile all files without src/main.cpp and run
+make test
+./tests/runtests
